@@ -1,0 +1,96 @@
+
+motionsensor.ino 
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+// Sketch for Particle Photon - PIR Sensor / Motion Detection
+// By Anton
+int inputPin = D9;              // choose the input pin (for PIR sensor)
+int ledPin = D3;                // LED Pin
+int pirState = LOW;             // we start, assuming no motion detected
+int val = 0;                    // variable for reading the pin status
+int calibrateTime = 5000;      // wait for the thingy to calibrate
+void setup() {
+    pinMode(ledPin, OUTPUT);
+    pinMode(inputPin, INPUT);     // declare sensor as input
+}
+void loop() {
+  // if the sensor is calibrated
+  if (calibrated()) {
+  // get the data from the sensor
+    readTheSensor();
+    // report it out, if the state has changed
+    reportTheData();
+    }
+}
+void readTheSensor() {
+    val = digitalRead(inputPin);
+}
+bool calibrated() {
+    return millis() - calibrateTime > 0;
+}
+void setLED(int state) {
+    digitalWrite(ledPin, state);
+}
+void reportTheData() {
+    if (val == HIGH) {
+        // the current state is no motion
+        // i.e. it's just changed
+        // announce this change by publishing an event
+        if (pirState == LOW) {
+          // we have just turned on
+          Particle.publish("PhotonMotion", "Motion Detected", PRIVATE);
+          // Update the current state
+          pirState = HIGH;
+          setLED(pirState);
+        }
+Ready.Last Event: status = offline Argon_007  v1.5.2 
